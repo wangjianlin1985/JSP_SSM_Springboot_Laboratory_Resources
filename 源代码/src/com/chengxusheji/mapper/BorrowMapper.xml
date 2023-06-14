@@ -1,0 +1,50 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.BorrowMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加借阅记录 -->
+	<insert id="addBorrow" parameterType="borrow">
+		insert into t_borrow(resourceObj,userObj,borrowNum,borrowTime,returnTime,memo) values 
+		(#{resourceObj.resourceNo},#{userObj.user_name},#{borrowNum},#{borrowTime},#{returnTime},#{memo})
+	</insert>
+
+	<!-- 按照查询条件分页查询借阅记录 -->
+	<select id="queryBorrow" resultMap="borrowMap" >
+		select t_borrow.* from t_borrow,t_resourceInfo,t_userInfo ${where} and t_borrow.resourceObj = t_resourceInfo.resourceNo and t_borrow.userObj = t_userInfo.user_name limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="borrowMap" type="borrow">
+        <id property="borrowId" column="borrowId" />
+        <association property="resourceObj" column="resourceObj" select="com.chengxusheji.mapper.ResourceInfoMapper.getResourceInfo" />
+        <association property="userObj" column="userObj" select="com.chengxusheji.mapper.UserInfoMapper.getUserInfo" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有借阅记录 -->
+	<select id="queryBorrowList" resultMap="borrowMap" >
+		select t_borrow.* from t_borrow,t_resourceInfo,t_userInfo ${where} and t_borrow.resourceObj = t_resourceInfo.resourceNo and t_borrow.userObj = t_userInfo.user_name
+	</select>
+
+    <!-- 按照查询条件的借阅记录数 -->
+	<select id="queryBorrowCount" resultType="int">
+		select count(*) from t_borrow,t_resourceInfo,t_userInfo ${where} and t_borrow.resourceObj = t_resourceInfo.resourceNo and t_borrow.userObj = t_userInfo.user_name
+	</select>
+
+	<!-- 根据主键查询某个借阅记录 -->
+	<select id="getBorrow" parameterType="int" resultMap="borrowMap">
+		select * from t_borrow where t_borrow.borrowId = #{borrowId}
+	</select>
+
+	<!-- 更新借阅记录 -->
+	<update id="updateBorrow" parameterType="borrow">
+		update t_borrow set resourceObj=#{resourceObj.resourceNo},userObj=#{userObj.user_name},borrowNum=#{borrowNum},borrowTime=#{borrowTime},returnTime=#{returnTime},memo=#{memo} where borrowId = #{borrowId}
+	</update>
+
+	<!-- 删除借阅记录 -->
+	<delete id="deleteBorrow" parameterType="int">
+		delete from t_borrow where borrowId=#{borrowId}
+	</delete>
+
+</mapper>

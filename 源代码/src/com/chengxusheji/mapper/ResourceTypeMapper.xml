@@ -1,0 +1,48 @@
+﻿<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--namespace命名空间，为了对sql语句进行隔离，方便管理，mapper开发dao方式，使用namespace有特殊作用  
+mapper代理开发时将namespace指定为mapper接口的全限定名  
+ -->
+<mapper namespace="com.chengxusheji.mapper.ResourceTypeMapper"> 
+<!--在mapper.xml文件中配置很多的sql语句，执行每个sql语句时，封装为MappedStatement对象 
+mapper.xml以statement为单位管理sql语句  
+ -->
+	<!-- 添加资源类型记录 -->
+	<insert id="addResourceType" parameterType="resourceType">
+		insert into t_resourceType(typeName,typeDesc,addDate) values 
+		(#{typeName},#{typeDesc},#{addDate})
+	</insert>
+
+	<!-- 按照查询条件分页查询资源类型记录 -->
+	<select id="queryResourceType" resultMap="resourceTypeMap" >
+		select t_resourceType.* from t_resourceType ${where} limit #{startIndex},#{pageSize}
+	</select>
+	<resultMap id="resourceTypeMap" type="resourceType">
+        <id property="typeId" column="typeId" />
+    </resultMap>
+
+    <!-- 按照查询条件查询所有资源类型记录 -->
+	<select id="queryResourceTypeList" resultMap="resourceTypeMap" >
+		select t_resourceType.* from t_resourceType ${where}
+	</select>
+
+    <!-- 按照查询条件的资源类型记录数 -->
+	<select id="queryResourceTypeCount" resultType="int">
+		select count(*) from t_resourceType ${where}
+	</select>
+
+	<!-- 根据主键查询某个资源类型记录 -->
+	<select id="getResourceType" parameterType="int" resultMap="resourceTypeMap">
+		select * from t_resourceType where t_resourceType.typeId = #{typeId}
+	</select>
+
+	<!-- 更新资源类型记录 -->
+	<update id="updateResourceType" parameterType="resourceType">
+		update t_resourceType set typeName=#{typeName},typeDesc=#{typeDesc},addDate=#{addDate} where typeId = #{typeId}
+	</update>
+
+	<!-- 删除资源类型记录 -->
+	<delete id="deleteResourceType" parameterType="int">
+		delete from t_resourceType where typeId=#{typeId}
+	</delete>
+
+</mapper>
